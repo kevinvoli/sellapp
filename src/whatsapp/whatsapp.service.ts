@@ -1,10 +1,12 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class WhatsappService {
+  private readonly logger = new Logger(WhatsappService.name);
+
   constructor(
     private readonly http: HttpService,
     private readonly config: ConfigService,
@@ -18,10 +20,7 @@ export class WhatsappService {
     const phoneNumberId = this.config.get<string>('WA_PHONE_NUMBER_ID');
     const apiVersion = this.config.get<string>('WA_API_VERSION', 'v20.0');
     const templateName = this.config.get<string>('WA_TEMPLATE_NAME');
-    const templateLanguage = this.config.get<string>(
-      'WA_TEMPLATE_LANGUAGE',
-      'fr',
-    );
+    const templateLanguage = this.config.get<string>('WA_TEMPLATE_LANGUAGE', 'fr');
 
     const url = `https://graph.facebook.com/${apiVersion}/${phoneNumberId}/messages`;
 
@@ -54,9 +53,48 @@ export class WhatsappService {
         response?: { data?: { error?: { message?: string } } };
         message?: string;
       };
-      const error =
-        axiosErr?.response?.data?.error?.message ?? axiosErr.message;
+      const error = axiosErr?.response?.data?.error?.message ?? axiosErr.message;
       return { success: false, error };
+    }
+  }
+
+  verifyToken(token: string): boolean {
+    const expected = this.config.get<string>('WA_WEBHOOK_VERIFY_TOKEN');
+    return token === expected;
+  }
+
+  handleWebhook(body: unknown): void {
+    const payload = body as Record<string, unknown>;
+
+    if (payload?.object !== 'whatsapp_business_account') return;
+
+    const entries = payload.entry as Array<Record<string, unknown>>;
+    if (!Array.isArray(entries)) return;
+
+    for (const entry of entries) {
+      const changes = entry.changes as Array<Record<string, unknown>>;
+      if (!Array.isArray(changes)) continue;
+
+      for (const change of changes) {
+        const value = change.value as Record<string, unknown>;
+        if (!value) continue;
+
+        // Messages entrants
+        const messages = value.messages as Array<Record<string, unknown>>;
+        if (Array.isArray(messages)) {
+          for (const msg of messages) {
+            this.logger.log(`Message reçu de ${msg.from as string} : ${JSON.stringify(msg)}`);
+          }
+        }
+
+        // Statuts de livraison
+        const statuses = value.statuses as Array<Record<string, unknown>>;
+        if (Array.isArray(statuses)) {
+          for (const status of statuses) {
+            this.logger.log(`Statut message ${status.id as string} : ${status.status as string}`);
+          }
+        }
+      }
     }
   }
 }
