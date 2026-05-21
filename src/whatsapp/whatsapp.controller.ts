@@ -21,6 +21,7 @@ export class WhatsappController {
     return this.whatsappService.send(dto);
   }
 
+  
   // Meta appelle ce endpoint pour vérifier le webhook
   @Get('webhook')
   verifyWebhook(

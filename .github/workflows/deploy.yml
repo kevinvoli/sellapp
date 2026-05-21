@@ -100,7 +100,7 @@ jobs:
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
           set -e
           cd ${{ secrets.VPS_APP_DIR }}
-          npm ci --omit=dev
+          npm ci
           if pm2 list | grep -q "sellapp"; then
             pm2 reload sellapp --update-env
           else
