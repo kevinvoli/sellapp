@@ -11,19 +11,21 @@ import { Response } from 'express';
 import { SendMessageDto } from './dto/send-message.dto';
 import { WhatsappService } from './whatsapp.service';
 
-
-@Controller('whatsapp')
+@Controller()
 export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}
 
-  @Post('send')
+  @Get('health')
+  health() {
+    return { status: 'ok' };
+  }
+
+  @Post('whatsapp/send')
   send(@Body() dto: SendMessageDto) {
     return this.whatsappService.send(dto);
   }
 
-  
-  // Meta appelle ce endpoint pour vérifier le webhook
-  @Get('webhook')
+  @Get('whatsapp/webhook')
   verifyWebhook(
     @Query('hub.mode') mode: string,
     @Query('hub.verify_token') token: string,
@@ -36,8 +38,7 @@ export class WhatsappController {
     return res.status(403).send('Forbidden');
   }
 
-  // Meta envoie les événements (messages entrants, statuts) ici
-  @Post('webhook')
+  @Post('whatsapp/webhook')
   @HttpCode(200)
   receiveWebhook(@Body() body: unknown) {
     this.whatsappService.handleWebhook(body);

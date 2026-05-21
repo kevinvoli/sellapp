@@ -116,6 +116,4 @@ jobs:
           sleep 5
           ssh -p ${{ secrets.VPS_PORT }} \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
-            "curl -sf http://localhost:${{ secrets.APP_PORT }}/health || \
-             curl -sf http://localhost:${{ secrets.APP_PORT }} || \
-             (pm2 logs sellapp --lines 20 --nostream && exit 1)"
+            "curl -sf http://localhost:${{ secrets.APP_PORT }}/health && echo 'OK' || (pm2 logs sellapp --lines 20 --nostream && exit 1)"
