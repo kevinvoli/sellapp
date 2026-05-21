@@ -41,12 +41,12 @@ export class WhatsappService {
           {
             type: 'body',
             parameters: [
-              { type: 'text', text: dto.boutique },
-              { type: 'text', text: dto.article },
-              { type: 'text', text: dto.client },
-              { type: 'text', text: dto.numero },
-              { type: 'text', text: dto.adresse },
-              { type: 'text', text: dto.commande },
+              { type: 'text', parameter_name: 'boutique', text: dto.boutique },
+              { type: 'text', parameter_name: 'article',  text: dto.article },
+              { type: 'text', parameter_name: 'client',   text: dto.client },
+              { type: 'text', parameter_name: 'numero',   text: dto.numero },
+              { type: 'text', parameter_name: 'adresse',  text: dto.adresse },
+              { type: 'text', parameter_name: 'commande', text: dto.commande },
             ],
           },
           {
