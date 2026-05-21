@@ -106,8 +106,6 @@ jobs:
           else
             pm2 start dist/main.js \
               --name sellapp \
-              --env production \
-              -i max \
               --max-memory-restart 512M
           fi
           pm2 save
