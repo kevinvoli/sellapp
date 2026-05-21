@@ -12,10 +12,16 @@ export class WhatsappService {
     private readonly config: ConfigService,
   ) {}
 
-  async send(
-    to: string,
-    message: string,
-  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  async send(dto: {
+    to: string;
+    boutique: string;
+    article: string;
+    client: string;
+    numero: string;
+    adresse: string;
+    commande: string;
+    urlSuffix: string;
+  }): Promise<{ success: boolean; messageId?: string; error?: string }> {
     const token = this.config.get<string>('WA_TOKEN');
     const phoneNumberId = this.config.get<string>('WA_PHONE_NUMBER_ID');
     const apiVersion = this.config.get<string>('WA_API_VERSION', 'v20.0');
@@ -26,7 +32,7 @@ export class WhatsappService {
 
     const payload = {
       messaging_product: 'whatsapp',
-      to,
+      to: dto.to,
       type: 'template',
       template: {
         name: templateName,
@@ -34,7 +40,22 @@ export class WhatsappService {
         components: [
           {
             type: 'body',
-            parameters: [{ type: 'text', text: message }],
+            parameters: [
+              { type: 'text', text: dto.boutique },
+              { type: 'text', text: dto.article },
+              { type: 'text', text: dto.client },
+              { type: 'text', text: dto.numero },
+              { type: 'text', text: dto.adresse },
+              { type: 'text', text: dto.commande },
+            ],
+          },
+          {
+            type: 'button',
+            sub_type: 'url',
+            index: '0',
+            parameters: [
+              { type: 'text', text: dto.urlSuffix },
+            ],
           },
         ],
       },

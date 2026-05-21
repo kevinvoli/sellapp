@@ -7,5 +7,29 @@ export class SendMessageDto {
 
   @IsString()
   @IsNotEmpty()
-  message: string;
+  boutique: string;
+
+  @IsString()
+  @IsNotEmpty()
+  article: string;
+
+  @IsString()
+  @IsNotEmpty()
+  client: string;
+
+  @IsString()
+  @IsNotEmpty()
+  numero: string;
+
+  @IsString()
+  @IsNotEmpty()
+  adresse: string;
+
+  @IsString()
+  @IsNotEmpty()
+  commande: string;
+
+  @IsString()
+  @IsNotEmpty()
+  urlSuffix: string;
 }

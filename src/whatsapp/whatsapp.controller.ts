@@ -17,7 +17,7 @@ export class WhatsappController {
 
   @Post('send')
   send(@Body() dto: SendMessageDto) {
-    return this.whatsappService.send(dto.to, dto.message);
+    return this.whatsappService.send(dto);
   }
 
   // Meta appelle ce endpoint pour vérifier le webhook
